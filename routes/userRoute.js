@@ -20,7 +20,7 @@ const router = express.Router();
 
 router.route("/register").post(register);
 
-router.route("/verify").post(isAuthenticated, verify);
+router.route("/verify").post( verify);
 
 router.route("/login").post(login);
 
