@@ -108,18 +108,7 @@ export const register = async (
       otp_expiry: new Date(Date.now() + process.env.OTP_EXPIRE * 60 * 1000),
     });
 
-    res.status(201).json({
-      success: true,
-      message: "OTP sent to your email, please verify your account",
-      user: {
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        avatar: newUser.avatar,
-        verified: newUser.verified,
-        // Include any additional user fields you have
-      },
-    });
+    sendToken(res, newUser, 201, "OTP sent to your email, please verify your account");
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -489,7 +478,9 @@ export const confirmDeletion = async (req, res) => {
 
 export const myProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("name email avatar");
+    const user = await User.findById(req.user._id);
+
+    sendToken(res, user, 201, `Welcome back ${user.name}`);
 
     if (!user) {
       return res.status(404).json({
