@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const imageSchema = new mongoose.Schema({
+  public_id: {
+    type: String,
+    required: true,
+  },
+  url: {
+    type: String,
+    required: true,
+  },
+});
+
 const schema = new mongoose.Schema({
     name: {
       type: String,
@@ -20,16 +31,7 @@ const schema = new mongoose.Schema({
       default: 0,
     },
     images: [
-      {
-        public_id: {
-          type: String,
-          required: true,
-        },
-        url: {
-          type: String,
-          required: true,
-        },
-      },
+      imageSchema
     ],
     category: {
       type: String,
