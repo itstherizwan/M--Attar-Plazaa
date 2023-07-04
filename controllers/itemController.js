@@ -4,152 +4,57 @@ import { Product } from "../models/itemModel.js";
 import { sendMail } from "../utils/sendMail.js";
 import APIFEATURE from "../utils/apifeatures.js";
 import { User } from "../models/userModel.js";
-
-// export const createProduct = async (req, res) => {
-//   try {
-//     // Check if the user is either a vendor or an admin
-//     if (req.user.role !== "Vendor" && req.user.role !== "Admin") {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Access denied. Only vendors and admins can create products.",
-//       });
-//     }
-
-//     let images = [];
-//     const files = req.files;
-
-//     if (files && Array.isArray(files)) {
-//       // If there are uploaded files, push them to the images array
-//       images = files.map((file) => file.buffer);
-//     }
-
-//     const uploadPromises = images.map((image) => {
-//       const tempFilePath = tempfile(".jpg");
-//       fs.writeFileSync(tempFilePath, image);
-//       return cloudinary.v2.uploader.upload(tempFilePath, {
-//         folder: "products",
-//         resource_type: "image",
-//         public_id: `product_${Date.now()}`,
-//         format: "jpg", // You can specify the desired format here
-//       });
-//     });
-
-//     const uploadResults = await Promise.allSettled(uploadPromises);
-
-//     const imagesLinks = [];
-
-//     uploadResults.forEach((result) => {
-//       if (result.status === "fulfilled") {
-//         const { public_id, secure_url } = result.value;
-//         imagesLinks.push({ public_id, url: secure_url });
-//       }
-//     });
-
-//     const productData = {
-//       name: req.body.name,
-//       description: req.body.description,
-//       price: req.body.price,
-//       images: imagesLinks,
-//       category: req.body.category,
-//       Stock: req.body.Stock,
-//       user: req.user._id,
-//     };
-
-//     const product = await Product.create(productData);
-
-//     // Send email notification
-//     const emailContent = `Your product "${product.name}" has been created successfully.`;
-//     await sendMail(
-//       req.user.email,
-//       "Product Creation Notification",
-//       emailContent
-//     );
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Product Created Successfully",
-//       product,
-//     });
-//   } catch (error) {
-//     if (error.name === "ValidationError") {
-//       // Handling validation errors
-//       const errorMessage = Object.values(error.errors).map(
-//         (val) => val.message
-//       );
-//       res.status(400).json({
-//         success: false,
-//         message: "Validation Error",
-//         error: errorMessage,
-//       });
-//     } else {
-//       // Other error handling
-//       res.status(500).json({
-//         success: false,
-//         message: "Error creating product",
-//         error: error.message,
-//       });
-//     }
-//   }
-// };
+import fs from "fs";
 
 export const createProduct = async (req, res) => {
   try {
     // Check if the user is either a vendor or an admin
-    if (req.user.role !== "Vendor" && req.user.role !== "Buyer") {
+    if (req.user.role !== "Vendor" && req.user.role !== "Admin") {
       return res.status(403).json({
         success: false,
         message: "Access denied. Only vendors and admins can create products.",
       });
     }
 
-    let images = [];
-    const files = req.files;
+    let uploadedImages = [];
+    if (req.files && req.files.images) {
+      const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
 
-    if (files && Array.isArray(files)) {
-      // If there are uploaded files, push them to the images array
-      images = files.map((file) => file.buffer);
-    }
-
-    const uploadPromises = images.map((image) => {
-      const tempFilePath = tempfile(".jpg");
-      fs.writeFileSync(tempFilePath, image);
-      return cloudinary.v2.uploader.upload(tempFilePath, {
-        folder: "products",
-        resource_type: "image",
-        public_id: `product_${Date.now()}`,
-        format: "jpg", // You can specify the desired format here
+      const imagePromises = images.map(async (image) => {
+        const myCloud = await cloudinary.v2.uploader.upload(image.tempFilePath, {
+          folder: "Product",
+          resource_type: "image",
+        });
+        return {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
       });
-    });
 
-    const uploadResults = await Promise.allSettled(uploadPromises);
-
-    const imagesLinks = [];
-
-    uploadResults.forEach((result) => {
-      if (result.status === "fulfilled") {
-        const { public_id, secure_url } = result.value;
-        imagesLinks.push({ public_id, url: secure_url });
-      }
-    });
+      uploadedImages = await Promise.all(imagePromises);
+    }
 
     const productData = {
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
-      images: imagesLinks,
+      images: uploadedImages,
       category: req.body.category,
       Stock: req.body.Stock,
       user: req.user._id,
     };
 
+    fs.rmSync("./tmp", { recursive: true });
+
     const product = await Product.create(productData);
 
-    // Retrieve the email of the user who created the product
     const user = await User.findById(req.user._id);
+
+    await user.save();
 
     // Send email notification
     const emailContent = `Your product "${product.name}" has been created successfully.`;
-    await sendMail(user.email, "Product Creation Notification", emailContent);
+    await sendMail(req.user.email, "Product Creation Notification", emailContent);
 
     res.status(201).json({
       success: true,
@@ -159,9 +64,7 @@ export const createProduct = async (req, res) => {
   } catch (error) {
     if (error.name === "ValidationError") {
       // Handling validation errors
-      const errorMessage = Object.values(error.errors).map(
-        (val) => val.message
-      );
+      const errorMessage = Object.values(error.errors).map((val) => val.message);
       res.status(400).json({
         success: false,
         message: "Validation Error",
@@ -177,6 +80,8 @@ export const createProduct = async (req, res) => {
     }
   }
 };
+
+
 
 export const getAllProducts = async (req, res, next) => {
   try {
