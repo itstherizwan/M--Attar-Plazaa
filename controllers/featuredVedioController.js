@@ -28,6 +28,7 @@ export const featureVideoUpload = async (req, res) => {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
     };
+    
 
     const featuredVideo = await FeaturedVideo.create(featuredVideoData);
 
