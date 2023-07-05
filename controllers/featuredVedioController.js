@@ -3,43 +3,47 @@ import { FeaturedVideo } from "../models/featuredVedioModel.js";
 import fs from "fs";
 
 
-export const featureVideoUpload = async ({ body: { title, description }, files: { vedioUrl } },
-    res) => {
+export const featureVideoUpload = async (req, res) => {
+  try {
+    const { title, description } = req.body;
 
-    try {
-        if (!vedioUrl) {
-            return res.status(400).json({
-                success: false,
-                message: "No video file provided",
-            });
-        }
-        const myCloud = await cloudinary.v2.uploader.upload(vedioUrl.tempFilePath, {
+    const {vedioUrl} = req.files;
+    if (!title || !vedioUrl || !vedioUrl.tempFilePath) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields are missing in the request",
+      });
+    }
+
+   const myCloud = await cloudinary.v2.uploader.upload(vedioUrl.tempFilePath, {
             folder: "Featured Vedio",
             resource_type: "video",
         });
         fs.rmSync("./tmp", { recursive: true });
+    
+    
 
-        const vedioUploadPromise = FeaturedVideo.create({
-            title, description,
-            vedioUrl: {
-                public_id: myCloud.public_id,
-                url: myCloud.secure_url,
-            },
-        });
-        await Promise.all([vedioUploadPromise]);
+    const featuredVideo = await FeaturedVideo.create({
+      title,
+      description,
+      vedioUrl: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+    },
+    });
 
-        res.status(200).json({
-            success: true,
-            message: "Video uploaded successfully",
-        });
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: "Failed to upload video",
-            error: error.message,
-        });
-    }
+    res.status(200).json({
+      success: true,
+      message: "Video uploaded successfully",
+      featuredVideo
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to upload video",
+      error: error.message,
+    });
+  }
 };
 
 
