@@ -2,12 +2,11 @@ import cloudinary from "cloudinary";
 import { FeaturedVideo } from "../models/featuredVedioModel.js";
 import fs from "fs";
 
-
 export const featureVideoUpload = async (req, res) => {
   try {
     const { title, description } = req.body;
+    const { vedioUrl } = req.files;
 
-    const {vedioUrl} = req.files;
     if (!title || !vedioUrl || !vedioUrl.tempFilePath) {
       return res.status(400).json({
         success: false,
@@ -15,27 +14,27 @@ export const featureVideoUpload = async (req, res) => {
       });
     }
 
-   const myCloud = await cloudinary.v2.uploader.upload(vedioUrl.tempFilePath, {
-            folder: "Featured Vedio",
-            resource_type: "video",
-        });
-        fs.rmSync("./tmp", { recursive: true });
-    
-    const featuredVideoData ={
+    const myCloud = await cloudinary.v2.uploader.upload(vedioUrl.tempFilePath, {
+      folder: "Featured Video",
+      resource_type: "video",
+    });
+    fs.rmSync(vedioUrl.tempFilePath, { recursive: true });
+
+    const featuredVideoData = {
       title,
       description,
       vedioUrl: {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
+      },
     };
-    
 
     const featuredVideo = await FeaturedVideo.create(featuredVideoData);
 
     res.status(200).json({
       success: true,
       message: "Video uploaded successfully",
-      featuredVideo
+      featuredVideo,
     });
   } catch (error) {
     res.status(500).json({
@@ -45,8 +44,6 @@ export const featureVideoUpload = async (req, res) => {
     });
   }
 };
-
-
 
 export const getAllFeaturedVideos = async (req, res) => {
     try {
