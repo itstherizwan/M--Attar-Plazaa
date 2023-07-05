@@ -41,7 +41,7 @@ router
 
   router
   .route("/feature-vedio")
-  .post(isAuthenticated, isAdminOrVendor, featureVideoUpload);
+  .post(isAuthenticated, featureVideoUpload);
 
   router
   .route("/all-feature-vedios")
