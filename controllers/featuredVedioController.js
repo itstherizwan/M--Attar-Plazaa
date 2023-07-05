@@ -7,6 +7,12 @@ export const featureVideoUpload = async ({ body: { title, description }, files: 
     res) => {
 
     try {
+        if (!vedioUrl) {
+            return res.status(400).json({
+                success: false,
+                message: "No video file provided",
+            });
+        }
         const myCloud = await cloudinary.v2.uploader.upload(vedioUrl.tempFilePath, {
             folder: "Featured Vedio",
             resource_type: "video",
