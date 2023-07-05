@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema({
+const featuredVideoSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true
@@ -9,13 +9,18 @@ const schema = new mongoose.Schema({
     type: String,
   },
   vedioUrl: {
-    public_id: String,
-    url: String,
+    public_id: {
+      type: String,
+    },
+    url: {
+      type: String,
+      required: true
+    }
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
-export const FeaturedVideo = mongoose.model("FeaturedVideo", schema);
 
+export const FeaturedVideo = mongoose.model("FeaturedVideo", featuredVideoSchema);
