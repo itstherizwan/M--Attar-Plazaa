@@ -21,16 +21,15 @@ export const featureVideoUpload = async (req, res) => {
         });
         fs.rmSync("./tmp", { recursive: true });
     
-    
-
-    const featuredVideo = await FeaturedVideo.create({
+    const featuredVideoData ={
       title,
       description,
       vedioUrl: {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
-    },
-    });
+    };
+
+    const featuredVideo = await FeaturedVideo.create(featuredVideoData);
 
     res.status(200).json({
       success: true,
