@@ -85,29 +85,12 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    const resultPerPage = 10;
-    const page = parseInt(req.query.page, 10) || 1;
-
-    const productsCount = await Product.countDocuments();
-
-    const apiFeature = new APIFEATURE(
-      Product.find().select("name price"),
-      req.query
-    )
-      .search()
-      .filter()
-      .pagination(resultPerPage);
-
-    const products = await apiFeature.query;
-
-    const filteredProductsCount = products.length;
+    const products = await Product.find();
 
     res.status(200).json({
       success: true,
       products,
-      productsCount,
-      resultPerPage,
-      filteredProductsCount,
+      count: products.length,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
