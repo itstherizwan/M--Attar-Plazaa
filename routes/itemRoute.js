@@ -45,7 +45,7 @@ router
 
   router
   .route("/all-feature-vedios")
-  .get(isAuthenticated, isAdminOrVendor, getAllFeaturedVideos);
+  .get(getAllFeaturedVideos);
 
   router
   .route("/delete-feature-vedios/:id")
