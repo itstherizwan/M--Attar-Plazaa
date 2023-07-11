@@ -2,6 +2,9 @@
 import express from "express";
 import { SearchOrder, dailyCount, getMyOrders, getOrderDetails, getSingleOrder, placeOrder, placeOrderOnline, processOrder } from "../controllers/orderController.js";
 import { isAdminOrVendor, isAuthenticated } from "../middleware/auth.js";
+import { addToCart, addToWishlist, deleteAllItemsFromCart, removeFromCart, removeFromWishlist } from "../controllers/orderCleanup.js";
+
+// import { addToCart } from "../controllers/cartController.js";
 
 const router = express.Router();
 
@@ -23,6 +26,19 @@ router.get('/daily-count', isAuthenticated, isAdminOrVendor, dailyCount); // dal
 router.get('/seach-order', isAuthenticated, isAdminOrVendor, SearchOrder); //search order for vendor
 
 
+//cart Route
+
+router.post('/add-to-cart', isAuthenticated, addToCart);
+
+router.delete('/remove-from-cart/:id', isAuthenticated,removeFromCart)
+
+router.delete('/clear-cart', isAuthenticated,deleteAllItemsFromCart)
+
+//wishList
+
+router.post('/add-to-wishlist', isAuthenticated, addToWishlist);
+
+router.delete('/remove-from-wishlist/:id', isAuthenticated,removeFromWishlist)
 
 
 
