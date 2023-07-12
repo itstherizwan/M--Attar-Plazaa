@@ -89,7 +89,27 @@ export const addToCart = async (req, res) => {
   }
 };
 
+export const getCart = async (req, res, next) => {
+  try {
+    const userId = req.user._id; // Assuming you have middleware to authenticate and attach the user object to the request
 
+    const user = await User.findById(userId).populate('cart.product');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      cart: user.cart,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const removeFromCart = async (req, res) => {
   try {
