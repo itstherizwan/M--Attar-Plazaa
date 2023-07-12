@@ -2,7 +2,7 @@
 import express from "express";
 import { SearchOrder, dailyCount, getMyOrders, getOrderDetails, getSingleOrder, placeOrder, placeOrderOnline, processOrder } from "../controllers/orderController.js";
 import { isAdminOrVendor, isAuthenticated } from "../middleware/auth.js";
-import { addToCart, addToWishlist, deleteAllItemsFromCart, removeFromCart, removeFromWishlist } from "../controllers/orderCleanup.js";
+import { addToCart, addToWishlist, getCart , deleteAllItemsFromCart, removeFromCart, removeFromWishlist } from "../controllers/orderCleanup.js";
 
 // import { addToCart } from "../controllers/cartController.js";
 
@@ -29,6 +29,8 @@ router.get('/seach-order', isAuthenticated, isAdminOrVendor, SearchOrder); //sea
 //cart Route
 
 router.post('/add-to-cart', isAuthenticated, addToCart);
+
+router.get('/get-cart', isAuthenticated, getCart);
 
 router.delete('/remove-from-cart/:id', isAuthenticated,removeFromCart)
 
