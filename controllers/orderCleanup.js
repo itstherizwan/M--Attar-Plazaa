@@ -66,7 +66,7 @@ export const addToCart = async (req, res) => {
       }
 
       const cartItem = {
-        product: product._id,
+        product,
         quantity: quantity,
       };
 
@@ -78,7 +78,6 @@ export const addToCart = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Item added to cart successfully",
-      cart: user.cart,
     });
   } catch (error) {
     res.status(500).json({
