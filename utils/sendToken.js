@@ -37,6 +37,8 @@ export const sendToken = (res, user, statusCode, message, deletionToken) => {
     email: user.email,
     avatar: user.avatar,
     verified: user.verified,
+    cart:user.cart,
+    wishlist:user.wishlist,
   };
 
   res
