@@ -47,11 +47,11 @@ const userSchema = new mongoose.Schema({
   resetPasswordOtpExpiry: Date,
 
   cart: [{
-    product: {
+    product: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
       required: true
-    },
+    }],
     quantity: {
       type: Number,
       required: true
