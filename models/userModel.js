@@ -45,6 +45,23 @@ const userSchema = new mongoose.Schema({
   otp_expiry: Date,
   resetPasswordOtp: Number,
   resetPasswordOtpExpiry: Date,
+
+  cart: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    }
+  }],
+  wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  }],
 });
 
 userSchema.pre("save", async function (next) {
@@ -68,4 +85,3 @@ userSchema.methods.comparePassword = async function (password) {
 userSchema.index({ otp_expiry: 1 }, { expireAfterSeconds: 0 });
 
 export const User = mongoose.model("User", userSchema);
-//End
