@@ -66,7 +66,7 @@ export const addToCart = async (req, res) => {
       }
 
       const cartItem = {
-        product: product,
+        product: product._id,
         quantity: quantity,
       };
 
