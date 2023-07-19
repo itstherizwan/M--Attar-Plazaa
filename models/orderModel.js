@@ -20,6 +20,13 @@ const schema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    office:{
+      type: String,
+      required: true,
+    },
+    village:{
+      type: String,
+    },
 
     country: {
       type: String,
