@@ -32,6 +32,8 @@ router.post('/add-to-cart', isAuthenticated, addToCart);
 
 router.get('/get-cart', isAuthenticated, getCart);
 
+router.put('/update-cart', isAuthenticated, updateCart);
+
 router.delete('/remove-from-cart/:id', isAuthenticated,removeFromCart)
 
 router.delete('/clear-cart', isAuthenticated,deleteAllItemsFromCart)
