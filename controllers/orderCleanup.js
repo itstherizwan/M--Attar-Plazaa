@@ -110,6 +110,50 @@ export const getCart = async (req, res, next) => {
   }
 };
 
+export const updateCart = async (req, res) => {
+  try {
+    const userId = req.user._id; // User ID of the currently logged-in user
+    const productId = req.body.productId; // ID of the product to update in cart
+    const newQuantity = Number(req.body.quantity); // New quantity for the product
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the product already exists in the cart
+    const existingCartItem = user.cart.find((item) => item.product.toString() === productId);
+
+    if (!existingCartItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in cart",
+      });
+    }
+
+    // Update the quantity of the existing cart item
+    existingCartItem.quantity = newQuantity;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cart item updated successfully",
+      cart: user.cart,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating cart item",
+      error: error.message,
+    });
+  }
+};
+
 export const removeFromCart = async (req, res) => {
   try {
     const userId = req.user._id; // User ID of the currently logged-in user
