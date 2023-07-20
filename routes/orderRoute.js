@@ -2,7 +2,7 @@
 import express from "express";
 import { SearchOrder, dailyCount, getMyOrders, getOrderDetails, getSingleOrder, placeOrder, placeOrderOnline, processOrder } from "../controllers/orderController.js";
 import { isAdminOrVendor, isAuthenticated } from "../middleware/auth.js";
-import { addToCart, addToWishlist, getCart , deleteAllItemsFromCart, removeFromCart, removeFromWishlist } from "../controllers/orderCleanup.js";
+import { addToCart, addToWishlist, getCart , deleteAllItemsFromCart, removeFromCart, removeFromWishlist,updateCart } from "../controllers/orderCleanup.js";
 
 // import { addToCart } from "../controllers/cartController.js";
 
