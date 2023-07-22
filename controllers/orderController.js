@@ -33,6 +33,13 @@ export const placeOrder = async (req, res, next) => {
       }
     }
 
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Please log in first.',
+      });
+    }
+
     const orderOptions = {
       shippingInfo,
       orderItems,
@@ -51,9 +58,9 @@ export const placeOrder = async (req, res, next) => {
 
     const user = await User.findById(req.user._id);
 
-    const userId = product.user;
+    // const userId = product.user;
 
-    const productOwner = await User.findById(userId);
+    // const productOwner = await User.findById(userId);
 
     // Send email notification
     const UserEmailContent = ` <html>
@@ -180,123 +187,7 @@ export const placeOrder = async (req, res, next) => {
 
 </html>`;
 
-    const OwnerEmailContent = `<html>
-<head>
-  <style>
-    /* Define your CSS styles here */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-    }
-    
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #ffffff;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    h2 {
-      color: #333333;
-      margin-top: 0;
-    }
-    
-    p {
-      margin-bottom: 10px;
-    }
-    
-    .highlight {
-      color: #ff6600;
-      font-weight: bold;
-    }
-    
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
-    
-    li {
-      margin-bottom: 10px;
-    }
-    
-    .shipping-address {
-      text-transform: uppercase;
-      font-weight: bold;
-      background-color: #f7f7f7;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    
-    .order-item {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #eeeeee;
-      padding-bottom: 10px;
-    }
-    
-    .item-image img {
-      width: 80px;
-      height: auto;
-      margin-right: 10px;
-      border-radius: 5px;
-    }
-    
-    .item-details h4 {
-      color: #333333;
-      margin-top: 0;
-    }
-    
-    .footer {
-      color: #999999;
-      font-size: 12px;
-      text-align: center;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2 style="color: #ff6600; text-align: center;">New Order Notification</h2>
-    <p style="text-align: center;">You have received a new order.</p>
-    <h3 style="color: #333333;">Order Details:</h3>
-    <ul>
-      <li class="highlight">Shipping Info:</li>
-      <li class="shipping-address">
-        <strong>${shippingInfo.address.toUpperCase()}</strong><br>
-        <strong>${shippingInfo.city}</strong><br>
-        <strong>${shippingInfo.state}</strong><br>
-        <strong>${shippingInfo.country}</strong><br>
-        <strong>${shippingInfo.pinCode}</strong><br>
-        <strong>Phone:</strong> ${shippingInfo.phoneNo}
-      </li>
-      <li class="highlight">Order Items:</li>
-      ${orderItems.map((item) => `
-        <li>
-          <div class="order-item">
-            <div class="item-image">
-              <img src="${item.image}" alt="${item.name}">
-            </div>
-            <div class="item-details">
-              <h4>${item.name}</h4>
-              <p><strong>Price:</strong> ${item.price}</p>
-              <p><strong>Quantity:</strong> ${item.quantity}</p>
-            </div>
-          </div>
-        </li>
-      `).join('')}
-      <li><strong>Payment Method:</strong> ${paymentMethod}</li>
-      <li><strong>Items Price:</strong> ${itemsPrice}</li>
-      <li><strong>Tax Price:</strong> ${taxPrice}</li>
-      <li><strong>Shipping Charges:</strong> ${shippingCharges}</li>
-      <li><strong>Total Amount:</strong> ${totalAmount}</li>
-    </ul>
-    <p>Please take necessary actions to process the order.</p>
-    <p class="footer">This email was sent from our e-commerce shop. Please do not reply.</p>
-  </div>
-</body>
-</html>`;
+
 
     await sendMail(
       user.email,
@@ -304,12 +195,7 @@ export const placeOrder = async (req, res, next) => {
       UserEmailContent
     );
 
-    await sendMail(
-      productOwner.email,
-      "New Order Request",
-      OwnerEmailContent
-
-    )
+   
 
     res.status(201).json({
       success: true,
