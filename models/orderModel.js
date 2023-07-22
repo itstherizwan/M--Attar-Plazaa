@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
 const schema = new mongoose.Schema({
-  fullName:{
+  
+  shippingInfo: {
+    fullName:{
       type: String,
       required: true,
     },
-  shippingInfo: {
     address: {
       type: String,
       required: true,
