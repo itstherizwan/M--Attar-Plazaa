@@ -1,6 +1,6 @@
 
 import express from "express";
-import { SearchOrder, dailyCount, getMyOrders, getOrderDetails, getSingleOrder, placeOrder, placeOrderOnline, processOrder } from "../controllers/orderController.js";
+import { SearchOrder, dailyCount, getMyOrders, getOrderDetails,paymentVerification, getSingleOrder, placeOrder, placeOrderOnline, processOrder } from "../controllers/orderController.js";
 import { isAdminOrVendor, isAuthenticated } from "../middleware/auth.js";
 import { addToCart, addToWishlist, getCart , deleteAllItemsFromCart, removeFromCart, removeFromWishlist,updateCart } from "../controllers/orderCleanup.js";
 
@@ -12,6 +12,8 @@ const router = express.Router();
 router.post("/place-order", isAuthenticated, placeOrder);
 
 router.post("/place-online-order", isAuthenticated, placeOrderOnline);
+
+router.post("/payment-verification", isAuthenticated, paymentVerification);
 
 router.route("/order/:id").get(isAuthenticated, isAdminOrVendor, getSingleOrder);
 
