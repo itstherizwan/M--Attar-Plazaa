@@ -436,40 +436,182 @@ export const SearchOrder = async (req, res, next) => {
 }
 
 export const placeOrderOnline = async (req, res, next) => {
-  const {
-    shippingInfo,
-    orderItems,
-    paymentMethod,
-    itemsPrice,
-    taxPrice,
-    shippingCharges,
-    totalAmount,
-  } = req.body;
+  try {
+    // Your existing code to handle the order placement
+    const {
+      shippingInfo,
+      orderItems,
+      paymentMethod,
+      itemsPrice,
+      taxPrice,
+      shippingCharges,
+      totalAmount,
+    } = req.body;
 
-  const user = req.user._id;
+    const user = req.user._id; // `req.user` already contains the user object, no need for `_id`
 
-  const orderOptions = {
-    shippingInfo,
-    orderItems,
-    paymentMethod,
-    itemsPrice,
-    taxPrice,
-    shippingCharges,
-    totalAmount,
-    user,
-  };
+    // Your existing code to create the order
+    const orderOptions = {
+      shippingInfo,
+      orderItems,
+      paymentMethod,
+      itemsPrice,
+      taxPrice,
+      shippingCharges,
+      totalAmount,
+      user: user._id, // If you need just the user ID for some reason
+    };
 
-  const options = {
-    amount: Number(totalAmount) * 100,
-    currency: "INR",
-  };
-  const order = await instance.orders.create(options);
+    const options = {
+      amount: Number(totalAmount) * 100,
+      currency: "INR",
+    };
+    const order = await instance.orders.create(options);
 
-  res.status(201).json({
-    success: true,
-    order,
-    orderOptions,
-  });
+    // Construct the email content using the template you provided
+    const UserEmailContent = `
+    <html>
+    <head>
+    <style>
+    /* Define your CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+      color: #333333;
+      margin-top: 0;
+    }
+    
+    p {
+      margin-bottom: 10px;
+    }
+    
+    .highlight {
+      color: #ff6600;
+      font-weight: bold;
+    }
+    
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    li {
+      margin-bottom: 10px;
+    }
+    
+    .shipping-address {
+      text-transform: uppercase;
+      font-weight: bold;
+      background-color: #f7f7f7;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eeeeee;
+      padding-bottom: 10px;
+    }
+    
+    .item-image img {
+      width: 80px;
+      height: auto;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    
+    .item-details h4 {
+      color: #333333;
+      margin-top: 0;
+    }
+    
+    .footer {
+      color: #999999;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+    </head>
+    
+  <body>
+  <div class="container">
+    <h2>Order Confirmation</h2>
+    <p>Your order has been placed successfully.</p>
+    <h3>Order Details:</h3>
+    <ul>
+      <li class="highlight">Shipping Info:</li>
+      <li>
+        <b>${shippingInfo.address.toUpperCase()}</b><br>
+        ${shippingInfo.city}<br>
+        ${shippingInfo.state}<br>
+        ${shippingInfo.country}<br>
+        ${shippingInfo.pinCode}<br>
+        Phone: ${shippingInfo.phoneNo}
+      </li>
+      <li class="highlight">Order Items:</li>
+      ${orderItems
+      .map(
+        (item) => `
+        <li>
+          <div class="order-item">
+            <div class="item-image">
+              <img src="${item.image}" alt="${item.name}">
+            </div>
+            <div class="item-details">
+              <h4>${item.name}</h4>
+              <p>Price: ${item.price}</p>
+              <p>Quantity: ${item.quantity}</p>
+            </div>
+          </div>
+        </li>
+      `
+      )
+      .join("")}
+      <li>Payment Method: ${paymentMethod}</li>
+      <li>Items Price: ${itemsPrice}</li>
+      <li>Tax Price: ${taxPrice}</li>
+      <li>Shipping Charges: ${shippingCharges}</li>
+      <li>Total Amount: ${totalAmount}</li>
+    </ul>
+    <p>Please review the details and contact us if you have any questions.</p>
+    <p class="footer">This email was sent from our e-commerce shop. Please do not reply.</p>
+  </div>
+</body>
+
+</html>
+    `;
+
+    // Send the email to the user
+    await sendMail(user.email, "Your Order has been Placed Successfully", UserEmailContent);
+
+    // Return the response
+    res.status(201).json({
+      success: true,
+      order,
+      orderOptions,
+    });
+  } catch (error) {
+    // Handle any errors that occurred during the order placement or email sending
+    console.error("Error while placing order:", error);
+    res.status(500).json({
+      success: false,
+      error: "An error occurred while placing the order.",
+    });
+  }
 };
 
 export const paymentVerification = async (req, res, next) => {
