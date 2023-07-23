@@ -613,7 +613,6 @@ export const placeOrderOnline = async (req, res, next) => {
     });
   }
 };
-
 export const paymentVerification = async (req, res, next) => {
   const {
     razorpay_payment_id,
