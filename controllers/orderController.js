@@ -448,7 +448,7 @@ export const placeOrderOnline = async (req, res, next) => {
       totalAmount,
     } = req.body;
 
-    const user = req.user._id; // `req.user` already contains the user object, no need for `_id`
+    const user = await User.findById(req.user._id);
 
     // Your existing code to create the order
     const orderOptions = {
@@ -597,7 +597,6 @@ export const placeOrderOnline = async (req, res, next) => {
 
     // Send the email to the user
     await sendMail(user.email, "Your Order has been Placed Successfully", UserEmailContent);
-
     // Return the response
     res.status(201).json({
       success: true,
