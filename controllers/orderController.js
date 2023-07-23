@@ -3,6 +3,7 @@ import { Order } from "../models/orderModel.js";
 import { User } from "../models/userModel.js";
 import { instance } from "../server.js";
 import { sendMail } from "../utils/sendMail.js";
+import { Payment } from "../models/paymentModel.js";
 import { validationResult } from "express-validator";
 
 export const placeOrder = async (req, res, next) => {
