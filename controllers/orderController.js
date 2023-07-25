@@ -597,7 +597,7 @@ export const placeOrderOnline = async (req, res, next) => {
     `;
 
     // Send the email to the user
-    await sendMail(user.email, "Your Order has been Placed Successfully", UserEmailContent);
+    // await sendMail(user.email, "Your Order has been Placed Successfully", UserEmailContent);
     // Return the response
     res.status(201).json({
       success: true,
