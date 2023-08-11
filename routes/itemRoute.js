@@ -9,6 +9,7 @@ import {
   getProductReviews,
   ProductDetails,
   updateProduct,
+  getProductsByCategory,
 } from "../controllers/itemController.js";
 import {  deleteFeatureVideo, featureVideoUpload, getAllFeaturedVideos } from "../controllers/featuredVedioController.js";
 const router = express.Router();
