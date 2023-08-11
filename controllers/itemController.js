@@ -104,7 +104,7 @@ export const getProductsByCategory = async (req, res, next) => {
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    const resultPerPage = 10;
+    const resultPerPage = 1;
     const page = parseInt(req.query.page, 10) || 1;
 
     const productsCount = await Product.countDocuments();
