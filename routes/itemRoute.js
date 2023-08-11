@@ -19,6 +19,8 @@ router.route("/get-product").get(getAllProducts);
 
 router.route("/product/:id").get(ProductDetails);
 
+router.route("/by-category").get(getProductsByCategory);
+
 router
   .route("/update-product/:id")
   .put(isAuthenticated, isAdminOrVendor, updateProduct);
