@@ -434,7 +434,11 @@ export const confirmDeletion = async (req, res) => {
       // Delete the user and perform any necessary cleanup
       await User.findByIdAndDelete(userId);
 
-      res.status(200).json({
+      // res.status(200).json({
+      //   success: true,
+      //   message: "Account deleted successfully.",
+      // });
+      res.clearCookie("token").status(200).json({
         success: true,
         message: "Account deleted successfully.",
       });
